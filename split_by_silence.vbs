@@ -5,6 +5,8 @@
 '	https://gist.github.com/vi/2fe3eb63383fcfdad7483ac7c97e9deb
 'This was done to to the lack of unix\linux based systems in the business world in my
 'country.
+'NOTE: you should run this script from a folder containing ffmpeg binaries or you
+'should have your ffmpeg directory in your windows "PATH" variable.
 '######################################################################################
 ' Some variables neede for this to work
 Dim oExec, strScript, wShell, sFileSelected, OUT, timeList, strFromProc
