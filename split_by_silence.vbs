@@ -50,7 +50,7 @@ msgbox ("Splitting points are:" & timeList)
 OUT = Left(sFileSelected, InStrRev(sFileSelected,".") - 1) & "%03d.mp3"
 'Running the split
 
-strScript = "ffmpeg -v warning -i """ & sFileSelected & """ -c copy -map 0+&_
+strScript = "ffmpeg -v warning -i """ & sFileSelected & """ -c copy -map 0+"&_
 	"-f segment -segment_times """ & timeList & """ """ & OUT & """"
 
 Set oExec = wShell.Exec(strScript)
