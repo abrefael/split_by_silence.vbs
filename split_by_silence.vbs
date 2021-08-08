@@ -23,7 +23,7 @@ sFileSelected = oExec.StdOut.ReadLine
 ' set it to 50dB and the length of silnce was approximately 4 seconds, so I entered 3.5
 ' seconds. You can change this to your prefences.
 
-silenceDetectVars = "-55dB:d=3.5"
+silenceDetectVars = "-48dB:d=3.5"
 
 'First thing is to recognise the "silences" in the file
 strScript = "cmd /c ""ffmpeg  -v warning -i """ &_
@@ -34,13 +34,18 @@ strScript = "cmd /c ""ffmpeg  -v warning -i """ &_
 Set oExec = wShell.Exec(strScript)
 strFromProc = ""
 Do
-    strFromProc = strFromProc & "," & oExec.StdOut.ReadLine()
+	If strFromProc = "" Then
+		strFromProc = oExec.StdOut.ReadLine()
+	Else
+		strFromProc = strFromProc & "," & oExec.StdOut.ReadLine()
+	End If
 Loop While Not oExec.Stdout.atEndOfStream
+
 timeList = replace(strFromProc,"lavfi.silence_start=","")
-timeList = mid(timeList, 2)
+'timeList = mid(timeList, 2)
 
 'Just letting you know...
-msgbox ("Splitting points are:" & timeList)
+msgbox ("Splitting points are: " & timeList)
 
 'Creating a template for the name of the files after the split (You cna actually
 'change this if you wish...)
@@ -50,7 +55,7 @@ msgbox ("Splitting points are:" & timeList)
 OUT = Left(sFileSelected, InStrRev(sFileSelected,".") - 1) & "%03d.mp3"
 'Running the split
 
-strScript = "ffmpeg -v warning -i """ & sFileSelected & """ -c copy -map 0+"&_
+strScript = "ffmpeg -v warning -i """ & sFileSelected & """ -c copy -map 0 "&_
 	"-f segment -segment_times """ & timeList & """ """ & OUT & """"
 
 Set oExec = wShell.Exec(strScript)
