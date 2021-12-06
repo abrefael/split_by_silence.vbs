@@ -9,7 +9,7 @@
 'should have your ffmpeg directory in your windows "PATH" variable.
 '######################################################################################
 ' Some variables neede for this to work
-Dim oExec, strScript, wShell, sFileSelected, OUT, timeList, strFromProc
+Dim oExec, strScript, wShell, sFileSelected, OUT, timeList, strFromProc, timeListStr
 Set wShell=CreateObject("WScript.Shell")
 
 ' This allows you to select your MP3 file (a file explorer shell)
@@ -23,7 +23,7 @@ sFileSelected = oExec.StdOut.ReadLine
 ' set it to 50dB and the length of silnce was approximately 4 seconds, so I entered 3.5
 ' seconds. You can change this to your prefences.
 
-silenceDetectVars = "-48dB:d=3.5"
+silenceDetectVars = "-50dB:d=3.5"
 
 'First thing is to recognise the "silences" in the file
 strScript = "cmd /c ""ffmpeg  -v warning -i """ &_
@@ -41,11 +41,16 @@ Do
 	End If
 Loop While Not oExec.Stdout.atEndOfStream
 
-timeList = replace(strFromProc,"lavfi.silence_start=","")
-'timeList = mid(timeList, 2)
+timeListStr = replace(strFromProc,"lavfi.silence_start=","")
+timeList = Split(timeListStr,",")
+timeListStr = ""
+for each x in timeList
+	timeListStr = timeListStr & "," & Cstr(CDbl(x) + 1)
+Next
+timeListStr = mid(timeListStr,2)
 
 'Just letting you know...
-msgbox ("Splitting points are: " & timeList)
+msgbox ("Splitting points are: " & timeListStr)
 
 'Creating a template for the name of the files after the split (You cna actually
 'change this if you wish...)
@@ -56,6 +61,6 @@ OUT = Left(sFileSelected, InStrRev(sFileSelected,".") - 1) & "%03d.mp3"
 'Running the split
 
 strScript = "ffmpeg -v warning -i """ & sFileSelected & """ -c copy -map 0 "&_
-	"-f segment -segment_times """ & timeList & """ """ & OUT & """"
+	"-f segment -segment_times """ & timeListStr & """ """ & OUT & """"
 
 Set oExec = wShell.Exec(strScript)
